@@ -4,7 +4,7 @@ spl_autoload_register(function($class) {
     $filePath = __DIR__ . "/" . str_replace("\\", "/", $class) . ".php";
     require_once($filePath);
 });
-
+$DEBUG = TRUE;
 $routes = include('Routing/routes.php');
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -24,12 +24,16 @@ if (isset($routes[$path])) {
             } else {
                 http_response_code(500);
             }
+            http_response_code(200);
             print($renderer->getContent());
         }
     }
     catch (Exception $e) {
         http_response_code(500);
-        print('error: ' . $e);
+        if ($DEBUG) {
+            print('error: ' . $e);
+        }
+
         print("Internal error, please contact the admin.<br>");
 
     }
