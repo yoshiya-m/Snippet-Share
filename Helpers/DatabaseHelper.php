@@ -8,7 +8,8 @@ use Exception;
 
 class DatabaseHelper
 {
-    public static function getRandomComputerPart(): array{
+    public static function getRandomComputerPart(): array
+    {
         $db = new MySQLWrapper();
 
         $stmt = $db->prepare("SELECT * FROM computer_parts ORDER BY RAND() LIMIT 1");
@@ -21,7 +22,8 @@ class DatabaseHelper
         return $part;
     }
 
-    public static function getComputerPartById(int $id): array{
+    public static function getComputerPartById(int $id): array
+    {
         $db = new MySQLWrapper();
 
         $stmt = $db->prepare("SELECT * FROM computer_parts WHERE id = ?");
@@ -36,12 +38,13 @@ class DatabaseHelper
         return $part;
     }
 
-    public static function getComputerPartByType(string $type, int $page, int $perpage): array{
+    public static function getComputerPartByType(string $type, int $page, int $perpage): array
+    {
         // page, perpageから返す部品の数とid?を決める
         $db = new MySQLWrapper();
 
         $stmt = $db->prepare("SELECT * FROM computer_parts WHERE type = ? LIMIT ? OFFSET ?");
-        $offset = ($page -1) * $perpage;
+        $offset = ($page - 1) * $perpage;
         $stmt->bind_param("sii", $type, $perpage, $offset);
         $stmt->execute();
 
@@ -54,7 +57,8 @@ class DatabaseHelper
         return $parts;
     }
 
-    public static function getRandomComputer(): array{
+    public static function getRandomComputer(): array
+    {
         // 4部品ランダムで抽出して返す
         $db = new MySQLWrapper();
         $stmt = $db->prepare("SELECT id FROM computer_parts");
@@ -65,21 +69,21 @@ class DatabaseHelper
         $computer = [];
         $PARTS_QUANTITY = 4;
 
-        for ($i = 0; $i < $PARTS_QUANTITY; $i++){
+        for ($i = 0; $i < $PARTS_QUANTITY; $i++) {
             $id = $ids[array_rand($ids)][0];
             $part = self::getComputerPartById($id);
             array_push($computer, $part);
         }
         return $computer;
-
     }
 
-    public static function getNewestComputerPart(int $page, int $perpage): array{
+    public static function getNewestComputerPart(int $page, int $perpage): array
+    {
         // 最新のcomputer partを取得
         $db = new MySQLWrapper();
 
         $stmt = $db->prepare("SELECT * FROM computer_parts ORDER BY release_date desc LIMIT ? OFFSET ?");
-        $offset = ($page -1) * $perpage;
+        $offset = ($page - 1) * $perpage;
         $stmt->bind_param("ii",  $perpage, $offset);
         $stmt->execute();
 
@@ -90,7 +94,8 @@ class DatabaseHelper
         return $part;
     }
 
-    public static function getComputerPartByPerformance(string $order, string $type): array{
+    public static function getComputerPartByPerformance(string $order, string $type): array
+    {
         $db = new MySQLWrapper();
 
         $validOrders = ['asc', 'ASC', 'desc', 'DESC'];
@@ -110,45 +115,84 @@ class DatabaseHelper
         return $parts;
     }
 
-    
-    public static function createSnippet(string $inputText, string $expirationTime): array {
+
+    public static function createSnippet(string $inputText, string $expirationTime): string
+    {
         // ランダムに文字列を作成してuRLを作る
         // そのURLが存在するか確認
         // ある場合は、3回つくる
-        $validExpirationTime = ['+10 minutes', '+1 hour', '+1 day'];
+        if (!mb_check_encoding($inputText, 'UTF-8')) {
+            throw new Exception('Input text contains unsupported characters for UTF-8.');
+        } 
+
+        $validExpirationTime = ['+10 minutes', '+1 hour', '+1 day', '+10 years'];
         if (!in_array($expirationTime, $validExpirationTime)) throw new Exception("expiration time is invalid.");
         $db = new MySQLWrapper();
-        
+
         $CREATE_TIMES = 3;
         for ($i = 0; $i < $CREATE_TIMES; $i++) {
-            $randomUrl = self::generateRandomString();
-            $stmt = $db->prepare("SELECT * FROM snippet WHERE url = ?");
+            $randomPath = self::generateRandomString();
+            $stmt = $db->prepare("SELECT * FROM snippet WHERE path = ?");
             $stmt->bind_param("s", $randomUrl);
             $stmt->execute();
             $result = $stmt->get_result();
             if ($result->num_rows <= 0) break;
-            if ($i >= 2) throw new Exception("Could not make a unique URL."); 
+            if ($i >= 2) throw new Exception("Could not make a unique URL.");
         }
-
-        $expireDate = new DateTime()->modify($expirationTime);
+        $now = new DateTime();
+        $expireDate = $now->modify($expirationTime)->format('Y-m-d H:i:s');;
         $db = new MySQLWrapper();
-        $stmt = $db->prepare("
-            INSERT INTO snippet (content, expire_date, url) ]
+        $stmt = $db->prepare(
+            "
+            INSERT INTO snippet (content, expire_date, path) 
             values (?, ?, ?);"
         );
-        $stmt->bind_param("sss", $inputText, $expireDate, $randomUrl);
+        $stmt->bind_param("sss", $inputText, $expireDate, $randomPath);
         $stmt->execute();
-        return $randomUrl;
+        $basePath = Settings::env("BASE_URL");
+        file_put_contents(__DIR__ . '/../debug.log', strlen($inputText));
+        file_put_contents(__DIR__ . '/../debug.log', "this is length" . strlen($inputText));
+        return $basePath . "/" . $randomPath;
     }
 
-    public static function generateRandomString($length = 20): string{
+    public static function generateRandomString($length = 20): string
+    {
         return bin2hex(random_bytes($length / 2)); // 16進数に変換
     }
 
-    public static function getContent(): array {
-
+    public static function doesPathExist($path): bool
+    {
+        $db = new MySQLWrapper();
+        $stmt = $db->prepare("SELECT * FROM snippet WHERE path = ?");
+        $stmt->bind_param("s", $path);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->num_rows > 0;
     }
-    
+
+    public static function getContentByPath($path): string
+    {
+        $db = new MySQLWrapper();
+        $stmt = $db->prepare("SELECT * FROM snippet WHERE path = ?");
+        $stmt->bind_param("s", $path);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $data = $result->fetch_assoc();
+        $content = $data["content"] ?? "no content";
+
+        return $content;
+    }
+
+    public static function isExpired($path): string
+    {
+        $db = new MySQLWrapper();
+        $stmt = $db->prepare("SELECT * FROM snippet WHERE path = ?");
+        $stmt->bind_param("s", $path);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $data = $result->fetch_assoc();
+        $expireDate = strtotime($data["expire_date"]);
+        $now = time();
+        return $now > $expireDate;
+    }
 }
-
-

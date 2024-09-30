@@ -14,8 +14,8 @@ class CreateTableSnippet implements SchemaMigration
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 content VARCHAR(500) NOT NULL,
                 expire_date DATETIME NOT NULL,
-                url VARCHAR(500) NOT NULL,
-                UNIQUE INDEX idx_unique_url (url),
+                path VARCHAR(500) NOT NULL,
+                UNIQUE INDEX path_unique_url (path),
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
