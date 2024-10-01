@@ -69,7 +69,7 @@ require(['vs/editor/editor.main'], function () {
         console.log("文字数" + data.inputText.length);
         console.log(data);
         // fetchでバックエンドに送る。テキストを送る
-        url = 'http://localhost:8000/create';
+        url = 'http://snippet-share.yoshm.com/create';
         // console.log("url: " + url);
         fetch(url, {
             method: 'POST',
