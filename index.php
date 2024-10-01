@@ -40,7 +40,7 @@ if (isset($routes[$path]) || DatabaseHelper::doesPathExist($path)) {
         echo "Requested URL is expired.";
     } else {
         $renderer = $routes['']($path);
-        // 期限切れの場合
+
     }
     
     try {
