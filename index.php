@@ -5,7 +5,9 @@ use Helpers\DatabaseHelper;
 spl_autoload_extensions(".php");
 spl_autoload_register(function ($class) {
     $filePath = __DIR__ . "/" . str_replace("\\", "/", $class) . ".php";
-    require_once($filePath);
+    if (file_exists($filePath)) {
+        require_once($filePath);
+    } 
 });
 $DEBUG = TRUE;
 $routes = include('Routing/routes.php');
