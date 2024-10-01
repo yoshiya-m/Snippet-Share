@@ -14,7 +14,7 @@ require(['vs/editor/editor.main'], function () {
     let path = window.location.pathname.replace("/", "");
     let content = "";
     if (path !== "") {
-        url = 'http://localhost:8000/content?path=' + path;
+        url = 'http://snippet-share.yoshm.com/content?path=' + path;
         fetch(url)
             .then(response => response.json())
             .then(data => {
