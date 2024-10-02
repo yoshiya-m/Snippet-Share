@@ -51,7 +51,7 @@ if (isset($routes[$path]) || DatabaseHelper::doesPathExist($path)) {
             $sanitized_value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
             if ($sanitized_value && $sanitized_value === $value) {
-                header("Access-Control-Allow-Origin: *");
+                // header("Access-Control-Allow-Origin: *");
                 header("{$name}: {$sanitized_value}");
             } else {
                 http_response_code(500);
