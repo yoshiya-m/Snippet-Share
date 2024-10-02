@@ -9,7 +9,7 @@ spl_autoload_register(function ($class) {
         require_once($filePath);
     } 
 });
-$DEBUG = TRUE;
+$DEBUG = false;
 $routes = include('Routing/routes.php');
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -38,6 +38,7 @@ if (isset($routes[$path]) || DatabaseHelper::doesPathExist($path)) {
     } else if (DatabaseHelper::isExpired($path)) {
         http_response_code(404);
         echo "Requested URL is expired.";
+        exit;
     } else {
         $renderer = $routes['']($path);
 
@@ -54,6 +55,8 @@ if (isset($routes[$path]) || DatabaseHelper::doesPathExist($path)) {
                 header("{$name}: {$sanitized_value}");
             } else {
                 http_response_code(500);
+                print("Internal error, please contact the admin.<br>");
+                exit;
             }
             http_response_code(200);
             print($renderer->getContent());
