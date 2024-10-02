@@ -15,13 +15,6 @@ $routes = include('Routing/routes.php');
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path = ltrim($path, '/');
 
-// $pathが""の場合はデフォルトのページを返す
-// 共有パスが入っている場合は、DBからコンテンツを取りデフォルトのページ作成時に中身を入れる
-// pathで検索
-// まず、pathで検索
-
-// throw new Exception ("message : " . (string)DatabaseHelper::doesPathExist($path));
-// jsファイルは別で返す
 if ($path === 'js/monaco-editor-setup.js') {
     header('Content-Type: application/javascript');
     echo file_get_contents(__DIR__ . '/js/monaco-editor-setup.js');
@@ -51,7 +44,6 @@ if (isset($routes[$path]) || DatabaseHelper::doesPathExist($path)) {
             $sanitized_value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
             if ($sanitized_value && $sanitized_value === $value) {
-                // header("Access-Control-Allow-Origin: *");
                 header("{$name}: {$sanitized_value}");
             } else {
                 http_response_code(500);

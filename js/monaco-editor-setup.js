@@ -30,7 +30,6 @@ require(['vs/editor/editor.main'], function () {
     console.log("setting monaco");
 
     const languages = monaco.languages.getLanguages();
-    // パスがあるときはバックエンドにcontentをリクエストする
 
     let languageSelector = document.getElementById("languages");
     for (let i = 0; i < languages.length; i++) {
@@ -40,14 +39,14 @@ require(['vs/editor/editor.main'], function () {
 
     languageSelector.addEventListener('change', function () {
         console.log("language changed: " + this.value);
-        const selectedLanguage = this.value; // ユーザーが選択した言語
+        const selectedLanguage = this.value; 
         monaco.editor.setModelLanguage(editor.getModel(), selectedLanguage);
     });
 
 
 
     document.getElementById("share-btn").addEventListener("click", function () {
-        // 共有URL作成ボタンにfetch
+
         const data = {
             inputText: editor.getValue(),
             expirationTime: document.getElementById("expiration-time").value
@@ -61,16 +60,15 @@ require(['vs/editor/editor.main'], function () {
             config.modalTitle.innerHTML = "文字数を500文字以下にしてください。";
             config.modalMessage.innerHTML = "現在の文字数: " + data.inputText.length;
             config.shareUrl.innerHTML = "";
-            // alert("文字は500文字以下にしてください。\n現在の文字数：" + data.inputText.length);
             return;
         }
 
         console.log("btn pushed");
         console.log("文字数" + data.inputText.length);
         console.log(data);
-        // fetchでバックエンドに送る。テキストを送る
+
         url = 'https://snippet-share.yoshm.com/create';
-        // console.log("url: " + url);
+
         fetch(url, {
             method: 'POST',
             headers: {

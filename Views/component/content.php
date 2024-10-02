@@ -1,18 +1,3 @@
-<?php
-use Database\MySQLWrapper;
-use Helpers\DatabaseHelper;
-
-// DBでデータを検索してmonaco に入れる
-// urlを取得したい
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = ltrim($path, '/');
-
-// ここでデータを取得する
-
-
-
-?>
-
 <div class="bg-warning text-center py-2">
     <h1 class="">Snippet Share Service</h1>
 </div>
@@ -33,11 +18,6 @@ $path = ltrim($path, '/');
             </select>
         </div>
         <button id="share-btn" type="button" class="btn btn-info m-2" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">共有URL作成</button>
-        <!-- モーダルのHTML -->
-        <!-- Button trigger modal -->
-        <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                    Launch static backdrop modal
-                </button> -->
 
         <!-- Modal -->
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
