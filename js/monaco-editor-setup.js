@@ -14,7 +14,7 @@ require(['vs/editor/editor.main'], function () {
     let path = window.location.pathname.replace("/", "");
     let content = "";
     if (path !== "") {
-        url = 'http://snippet-share.yoshm.com/content?path=' + path;
+        url = 'https://snippet-share.yoshm.com/content?path=' + path;
         fetch(url)
             .then(response => response.json())
             .then(data => {
@@ -69,7 +69,7 @@ require(['vs/editor/editor.main'], function () {
         console.log("文字数" + data.inputText.length);
         console.log(data);
         // fetchでバックエンドに送る。テキストを送る
-        url = 'http://snippet-share.yoshm.com/create';
+        url = 'https://snippet-share.yoshm.com/create';
         // console.log("url: " + url);
         fetch(url, {
             method: 'POST',
