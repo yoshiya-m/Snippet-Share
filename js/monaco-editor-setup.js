@@ -20,14 +20,13 @@ require(['vs/editor/editor.main'], function () {
             .then(data => {
                 
                 content = data.content;
-                console.log(content);
                 editor.setValue(content);
             })
             .catch(error => {
                 console.error('エラー:', error);
             })
     }
-    console.log("setting monaco");
+
 
     const languages = monaco.languages.getLanguages();
 
@@ -38,7 +37,6 @@ require(['vs/editor/editor.main'], function () {
     }
 
     languageSelector.addEventListener('change', function () {
-        console.log("language changed: " + this.value);
         const selectedLanguage = this.value; 
         monaco.editor.setModelLanguage(editor.getModel(), selectedLanguage);
     });
@@ -63,10 +61,6 @@ require(['vs/editor/editor.main'], function () {
             return;
         }
 
-        console.log("btn pushed");
-        console.log("文字数" + data.inputText.length);
-        console.log(data);
-
         url = 'https://snippet-share.yoshm.com/create';
 
         fetch(url, {
@@ -78,7 +72,6 @@ require(['vs/editor/editor.main'], function () {
         })
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 config.modalTitle.innerHTML = "共有URL作成完了！";
                 config.modalMessage.innerHTML = "共有URL: ";
                 config.shareUrl.innerHTML = data.url;
