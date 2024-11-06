@@ -7,7 +7,19 @@ require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-e
 require(['vs/editor/editor.main'], function () {
 
     var editor = monaco.editor.create(document.getElementById('editor-container'), {
-        value: "",
+        value: 
+`# 使用方法
+
+1.このエリアに自由に書く
+2.右下の「共有URL作成」を押す
+3.表示される共有URLをコピーして共有!
+
+# オプション
+
+- 下の「言語」を選択するとシンタックスハイライトを利用できます
+- 「スニペット有効期限」を設定すると、期限後に削除されます
+
+`,
         language: 'plaintext'
     });
 
